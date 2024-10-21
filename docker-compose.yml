@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfiles/frontend.Dockerfile
+    ports:
+      - "3000:80"
+    container_name: frontend_app
+
+  backend:
+    build:
+      context: .
+      dockerfile: dockerfiles/backend.Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_app:5432/app_data
+      - SPRING_DATASOURCE_USERNAME=boss
+      - SPRING_DATASOURCE_PASSWORD=boss
+    depends_on:
+      - postgres
+    container_name: backend_app
+
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: boss
+      POSTGRES_PASSWORD: boss
+      POSTGRES_DB: app_data
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    container_name: postgres_app
+
+volumes:
+  postgres_data:
