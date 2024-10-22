@@ -17,8 +17,9 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_app:5432/app_data
-      - SPRING_DATASOURCE_USERNAME=boss
-      - SPRING_DATASOURCE_PASSWORD=boss
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - JWT_SECRET_KEY="qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w=="
     depends_on:
       - postgres
     container_name: backend_app
@@ -28,8 +29,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: boss
-      POSTGRES_PASSWORD: boss
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: app_data
     volumes:
       - postgres_data:/var/lib/postgresql/data
