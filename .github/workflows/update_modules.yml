@@ -22,3 +22,4 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "Update submodules"
             git push origin main
+          fi
