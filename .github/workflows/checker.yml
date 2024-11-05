@@ -1,0 +1,49 @@
+name: Check build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: app_data
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Build and run containers
+        run: |
+          docker-compose up -d --build
+          sleep 30
+
+      - name: Backend connection to postgres
+        run: |
+          # Проверяем, что бэкенд может подключиться к базе данных
+          curl -f http://localhost:8080/actuator/health || exit 1
+
+      # - name: Frontend connection to backend
+      #   run: |
+      #     curl -f http://localhost:3000/api/your-endpoint || exit 1
+
+      - name: Finish
+        run: |
+          docker-compose down
