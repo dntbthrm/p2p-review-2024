@@ -18,7 +18,7 @@ jobs:
         run: git submodule init
       - name: Update submodules
         run: |
-          git submodule update --remote --merge
+          git submodule update --remote
           git add .
           if ! git diff --cached --quiet; then
             git commit -m "Update submodules"
