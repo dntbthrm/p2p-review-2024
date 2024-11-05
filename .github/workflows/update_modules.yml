@@ -28,5 +28,5 @@ jobs:
           git add .
           if ! git diff --cached --quiet; then
             git commit -m "Update submodules"
-            git push origin main
+            git push https://x-access-token:${GH_PAT}@github.com/dntbthrm/p2p-review-2024.git main
           fi
