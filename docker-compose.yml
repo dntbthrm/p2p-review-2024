@@ -30,7 +30,7 @@ services:
     container_name: backend_app
 
   postgres:
-    image: postgres:16
+    image: postgres:15
     ports:
       - "5432:5432"
     environment:
