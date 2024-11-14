@@ -24,10 +24,10 @@ jobs:
           --health-retries=5
 
     steps:
-      #- name: Check out code
-      #  uses: actions/checkout@v2
-      #  with:
-      #    submodules: recursive
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Install Docker
         run: |
@@ -51,7 +51,7 @@ jobs:
       - name: Build and start dockers
         run: |
           # Если файл находится в корневой директории, используйте этот путь:
-          cd /home/dntbthrm/ && docker-compose -f /home/dntbthrm/p2p-review-2024/docker-compose.yml up -d --build
+          docker-compose -f docker-compose.yml up -d --build
           sleep 30  # Задержка для инициализации сервисов
 
       - name: Check Backend -> PostgreSQL Connection
