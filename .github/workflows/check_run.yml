@@ -1,8 +1,10 @@
 name: Check build
+
 on:
   push:
     branches:
       - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,27 +22,33 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+
     steps:
-      # - name: Check out code
-      #  uses: actions/checkout@v2
+      #- name: Check out code
+       # uses: actions/checkout@v2
        # with:
        #   submodules: recursive
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version  # Проверка установки
 
       - name: Build and start dockers
         run: |
           docker-compose up -d --build
           sleep 30  # Задержка для инициализации сервисов
 
-      - name: Check Backend -> PostgreSQL Connection
+      - name: Check backend -> postgres
         run: |
           docker exec -i backend_app \
-          sh -c 'PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h postgres_app -U $SPRING_DATASOURCE_USERNAME -d $SPRING_DATASOURCE_URL -c "\dt"' || exit 1
+          sh -c 'PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h postgres -U $SPRING_DATASOURCE_USERNAME -d $SPRING_DATASOURCE_URL -c "\dt"' || exit 1
           echo "Backend connected to PostgreSQL successfully"
-
 
       - name: Auth check
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/authenticate \
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://backend_app:8080/authenticate \
           -H "Content-Type: application/json" \
           -d '{"username": "John_Smith", "password": "password1"}')
           if [ "$response" -ne 200 ]; then
@@ -52,8 +60,13 @@ jobs:
 
       - name: Check frontend -> backend
         run: |
-          docker exec -i frontend_app curl -f http://backend_app:8080/authenticate || exit 1
-          echo "Frontend connected successfully"
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://frontend_app:3000/api/your-endpoint)
+          if [ "$response" -ne 200 ]; then
+            echo "Frontend failed to connect to backend with response code $response"
+            exit 1
+          else
+            echo "Frontend connected successfully"
+          fi
 
       - name: Finish
         run: |
