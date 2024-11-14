@@ -24,21 +24,30 @@ jobs:
           --health-retries=5
 
     steps:
-     # - name: Check out code
+      #- name: Check out code
       #  uses: actions/checkout@v2
-     #   with:
+      #  with:
       #    submodules: recursive
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl enable --now docker
+          sudo usermod -aG docker $USER
+          docker --version  # Проверка установки Docker
 
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  
+          docker-compose --version  # Проверка установки Docker Compose
 
       - name: Build and start dockers
         run: |
-          cd .. && docker-compose -f docker-compose.yml up -d --build
-          sleep 30  
+          # Если файл находится в корневой директории, используйте этот путь:
+          docker-compose -f docker-compose.yml up -d --build
+          sleep 30  # Задержка для инициализации сервисов
 
       - name: Check Backend -> PostgreSQL Connection
         run: |
