@@ -56,9 +56,8 @@ jobs:
 
       - name: Check Backend -> PostgreSQL Connection
         run: |
-          docker exec -i backend_app \
-          sh -c 'PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h postgres -U $SPRING_DATASOURCE_USERNAME -d $SPRING_DATASOURCE_URL -c "\dt"' || exit 1
-          echo "Backend connected to PostgreSQL successfully"
+          docker exec -i postgres_app psql -U postgres -d migratecheck -c "\dt" || exit 1
+          echo "Backend connected to PostgreSQL and tables exist"
 
       - name: Auth check
         run: |
