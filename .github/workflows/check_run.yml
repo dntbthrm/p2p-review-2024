@@ -37,7 +37,7 @@ jobs:
 
       - name: Build and start dockers
         run: |
-          docker-compose -f docker-compose.yml up -d --build
+          cd .. && docker-compose -f docker-compose.yml up -d --build
           sleep 30  
 
       - name: Check Backend -> PostgreSQL Connection
