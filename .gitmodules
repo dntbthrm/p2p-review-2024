@@ -6,4 +6,4 @@
 [submodule "backend"]
     path = backend
     url = https://github.com/LegolasMEE/OutlookProject.git
-    branch = main
+    branch = master
