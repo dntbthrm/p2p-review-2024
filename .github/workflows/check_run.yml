@@ -24,23 +24,23 @@ jobs:
           --health-retries=5
 
     steps:
-      #- name: Check out code
-       # uses: actions/checkout@v2
-       # with:
-       #   submodules: recursive
+     # - name: Check out code
+      #  uses: actions/checkout@v2
+     #   with:
+      #    submodules: recursive
 
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Проверка установки
+          docker-compose --version  
 
       - name: Build and start dockers
         run: |
-          docker-compose up -d --build
-          sleep 30  # Задержка для инициализации сервисов
+          docker-compose -f p2p-review-2024/docker-compose.yml up -d --build
+          sleep 30  
 
-      - name: Check backend -> postgres
+      - name: Check Backend -> PostgreSQL Connection
         run: |
           docker exec -i backend_app \
           sh -c 'PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h postgres -U $SPRING_DATASOURCE_USERNAME -d $SPRING_DATASOURCE_URL -c "\dt"' || exit 1
@@ -70,4 +70,4 @@ jobs:
 
       - name: Finish
         run: |
-          docker-compose down
+          docker-compose -f p2p-review-2024/docker-compose.yml down
