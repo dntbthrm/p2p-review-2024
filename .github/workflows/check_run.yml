@@ -59,26 +59,17 @@ jobs:
           docker exec -i postgres_app psql -U postgres -d migratecheck -c "\dt" || exit 1
           echo "Backend connected to PostgreSQL and tables exist"
 
-      - name: Auth check
+      - name: Auth check (frontend -> backend)
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://backend_app:8080/authenticate \
+          response=$(docker exec -i frontend_app curl -s -o /dev/null -w "%{http_code}" -X POST http://backend:8080/authenticate \
           -H "Content-Type: application/json" \
           -d '{"username": "John_Smith", "password": "password1"}')
+
           if [ "$response" -ne 200 ]; then
             echo "Authentication failed with response code $response"
             exit 1
           else
             echo "Authentication successful"
-          fi
-
-      - name: Check frontend -> backend
-        run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://frontend_app:3000/api/your-endpoint)
-          if [ "$response" -ne 200 ]; then
-            echo "Frontend failed to connect to backend with response code $response"
-            exit 1
-          else
-            echo "Frontend connected successfully"
           fi
 
       - name: Finish
