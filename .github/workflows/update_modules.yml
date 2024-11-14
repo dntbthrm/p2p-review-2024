@@ -2,7 +2,7 @@ name: Update Modules
 
 on:
   schedule:
-    - cron: '0 */2 * * *' # каждые 2 часа
+    - cron: '0 */2 * * *' # Every 2 hours
   workflow_dispatch:
 
 jobs:
@@ -19,27 +19,6 @@ jobs:
         run: |
           git config --local user.email "palmalife99@gmail.com"
           git config --local user.name "dntbthrm"
-
-      - name: Initialize submodules
-        run: git submodule init
-
-      - name: Update frontend submodule to 'develop' branch
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          cd frontend
-          git fetch origin
-          git checkout develop
-          git pull origin develop
-          cd ..
-
-      - name: Update backend submodule
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          cd backend
-          git pull origin main
-          cd ..
 
       - name: Commit and push if there are changes
         env:
