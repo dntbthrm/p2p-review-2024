@@ -39,20 +39,20 @@ jobs:
           sudo apt-get install -y docker-ce
           sudo systemctl enable --now docker
           sudo usermod -aG docker $USER
-          docker --version  # Проверка установки Docker
+          docker --version 
 
 
       - name: Install Docker Compose
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Проверка установки Docker Compose
+          docker-compose --version  
 
       - name: Build and start dockers
         run: |
           # Если файл находится в корневой директории, используйте этот путь:
           docker-compose -f docker-compose.yml up -d --build
-          sleep 30  # Задержка для инициализации сервисов
+          sleep 30  
 
       - name: Check Backend -> PostgreSQL Connection
         run: |

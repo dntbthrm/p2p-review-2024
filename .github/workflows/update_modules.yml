@@ -15,7 +15,7 @@ jobs:
         with:
           submodules: recursive 
 
-      - name: Configure Git author
+      - name: Git author
         run: |
           git config --local user.email "palmalife99@gmail.com"
           git config --local user.name "dntbthrm"
@@ -28,6 +28,7 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           cd frontend
+          git fetch origin
           git checkout develop
           git pull origin develop
           cd ..
