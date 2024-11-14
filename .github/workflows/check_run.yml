@@ -1,0 +1,60 @@
+name: Check build
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: migratecheck
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      # - name: Check out code
+      #  uses: actions/checkout@v2
+       # with:
+       #   submodules: recursive
+
+      - name: Build and start dockers
+        run: |
+          docker-compose up -d --build
+          sleep 30  # Задержка для инициализации сервисов
+
+      - name: Check Backend -> PostgreSQL Connection
+        run: |
+          docker exec -i backend_app \
+          sh -c 'PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h postgres_app -U $SPRING_DATASOURCE_USERNAME -d $SPRING_DATASOURCE_URL -c "\dt"' || exit 1
+          echo "Backend connected to PostgreSQL successfully"
+
+
+      - name: Auth check
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/authenticate \
+          -H "Content-Type: application/json" \
+          -d '{"username": "John_Smith", "password": "password1"}')
+          if [ "$response" -ne 200 ]; then
+            echo "Authentication failed with response code $response"
+            exit 1
+          else
+            echo "Authentication successful"
+          fi
+
+      - name: Check frontend -> backend
+        run: |
+          docker exec -i frontend_app curl -f http://backend_app:8080/authenticate || exit 1
+          echo "Frontend connected successfully"
+
+      - name: Finish
+        run: |
+          docker-compose down
