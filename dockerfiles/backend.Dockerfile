@@ -12,7 +12,7 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app_backend
 
-#ENV SPRING_PROFILES_ACTIVE=docker
+ENV SPRING_PROFILES_ACTIVE=docker
 
 RUN apt-get update && apt-get install -y netcat && rm -rf /var/lib/apt/lists/*
 

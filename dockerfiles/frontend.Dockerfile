@@ -9,10 +9,13 @@ RUN npm install --legacy-peer-deps
 
 COPY frontend/ ./
 
+ENV REACT_APP_API_BASE_URL=http://localhost:8080
+
 RUN npm run build   
 
 
 FROM nginx:alpine
+COPY dockerfiles/default.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app_frontend/build /usr/share/nginx/html
 
