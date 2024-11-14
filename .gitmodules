@@ -1,6 +1,9 @@
 [submodule "frontend"]
-	path = frontend
-	url = https://github.com/jintonick/t1-review.git
+    path = frontend
+    url = https://github.com/jintonick/t1-review.git
+    branch = develop
+
 [submodule "backend"]
-	path = backend
-	url = https://github.com/LegolasMEE/OutlookProject.git
+    path = backend
+    url = https://github.com/LegolasMEE/OutlookProject.git
+    branch = main
